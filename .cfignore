@@ -1,0 +1,10 @@
+# .cfignore
+**/__pycache__/
+*.pyc
+.git
+.gitignore
+.env
+.vscode
+*.log
+.DS_Store
+README.md

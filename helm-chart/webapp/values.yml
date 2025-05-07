@@ -1,0 +1,16 @@
+replicaCount: 1
+
+image:
+  repository: <AWS_ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/webapp
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+
+vault:
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "webapp"
+    vault.hashicorp.com/agent-inject-secret-db-password: "secret/data/webapp/db"

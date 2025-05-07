@@ -1,0 +1,49 @@
+# codefresh.yml
+version: '1.0'
+stages:
+  - clone
+  - build
+  - push
+  - deploy
+
+steps:
+  clone:
+    title: Clone Repo
+    type: git-clone
+    repo: '${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}'
+    revision: '${{CF_BRANCH}}'
+    stage: clone
+
+  build_image:
+    title: Build Docker Image
+    type: build
+    image_name: webapp
+    tag: '${{CF_SHORT_REVISION}}'
+    dockerfile: Dockerfile
+    working_directory: ./
+    stage: build
+
+  push_ecr:
+    title: Push to AWS ECR
+    type: push
+    candidate: '${{build_image}}'
+    registry: 'aws-ecr'
+    stage: push
+
+  deploy_helm:
+    title: Helm Deploy to EKS
+    type: helm
+    arguments:
+      chart_name: ./helm-chart/webapp
+      release_name: webapp
+      kube_context: arn:aws:eks:ap-southeast-2:123456789012:cluster/vault-eks-cluster
+      namespace: default
+    stage: deploy
+
+  rollback_on_failure:
+    title: Rollback on Fail
+    type: freestyle
+    when:
+      condition: 'failure()'
+    commands:
+      - helm rollback webapp
