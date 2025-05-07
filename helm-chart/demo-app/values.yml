@@ -1,0 +1,13 @@
+replicaCount: 1
+
+image:
+  repository: <AWS_ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/demo-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5000
+
+vault:
+  annotations: {}

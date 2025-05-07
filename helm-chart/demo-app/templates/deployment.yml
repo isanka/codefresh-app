@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: demo-app
+  template:
+    metadata:
+      labels:
+        app: demo-app
+      annotations:
+{{- with .Values.vault.annotations }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+        - name: demo-app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 5000
+          env:
+            - name: DB_PASSWORD
+              value: "vault-placeholder"  # Replace with real Vault injection
